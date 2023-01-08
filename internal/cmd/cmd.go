@@ -3,10 +3,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/gogf/csrf/v2"
-	"net/http"
 	"petStore/internal/controller"
-	"time"
 	// "github.com/goflyfox/gtoken"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -38,14 +35,6 @@ var (
 					)
 				})
 				group.Group("/money", func(group *ghttp.RouterGroup) {
-					group.Middleware(csrf.NewWithCfg(csrf.Config{
-						Cookie: &http.Cookie{
-							Name: "X-Token", // token name in cookie
-						},
-						ExpireTime:      time.Hour * 24,
-						TokenLength:     32,
-						TokenRequestKey: "X-Token", // use this key to read token in request param
-					}))
 					group.Bind(
 						controller.Money,
 					)
