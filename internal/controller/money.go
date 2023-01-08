@@ -6,7 +6,6 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/golang-jwt/jwt/v4"
 
 	v1 "petStore/api/v1"
 	"petStore/internal/model"
@@ -52,27 +51,6 @@ func (c *cMoney) TransferMoney(ctx context.Context, req *v1.TransferMoneyReq) (r
 	UserNameCookie := g.RequestFromCtx(ctx).Cookie.Get("user-name").String()
 	IssueTimeCookie := g.RequestFromCtx(ctx).Cookie.Get("issue-time").String()
 	g.Log().Print(ctx, "UserNameCookie: ", UserNameCookie)
-	// check jwt token to identify the client-user
-	jwtToken := g.RequestFromCtx(ctx).Header.Get("jwt-token")
-	g.Log().Print(ctx, "jwtToken: ", jwtToken)
-	// decode
-	token, err := jwt.ParseWithClaims(jwtToken, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
-		fmt.Println(token.Header)
-		return JWT_SIG, nil
-	})
-	if err != nil {
-		g.RequestFromCtx(ctx).Response.WriteStatus(403)
-		return
-	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if ok {
-		username := claims["user-name"].(string)
-		if username != req.SourceAccount {
-			g.RequestFromCtx(ctx).Response.WriteStatus(403, "invalid source user")
-			return
-		}
-	}
-	g.Log().Print(ctx, "parsed token: ", token)
 	err = service.User().CookieValidate(ctx, model.UserCookiesInput{UserName: UserNameCookie, IssueTime: IssueTimeCookie})
 	if err != nil {
 		g.RequestFromCtx(ctx).Response.WriteStatus(403)
