@@ -49,7 +49,7 @@ func (c *cUser) Login(ctx context.Context, req *v1.UserLoginReq) (res *v1.UserLo
 	// set cookies
 	g.RequestFromCtx(ctx).Cookie.Set("user-name", req.UserName)
 	g.RequestFromCtx(ctx).Cookie.Set("issue-time", fmt.Sprint(time.Now().Unix()))
-	g.RequestFromCtx(ctx).Cookie.SetCookie("X-Token", grand.S(32), "10.67.103.83", "/", gtime.D*365)
+	g.RequestFromCtx(ctx).Cookie.SetCookie("X-Token", grand.S(32), "kewei.sh.intel.com", "/", gtime.D*365)
 	g.RequestFromCtx(ctx).Response.Writeln(&v1.UserLoginRes{Success: true, Reason: "success"})
 	return
 }
