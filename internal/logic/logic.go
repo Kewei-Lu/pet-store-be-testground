@@ -5,6 +5,7 @@
 package logic
 
 import (
+	_ "petStore/internal/logic/auth"
 	_ "petStore/internal/logic/money"
 	_ "petStore/internal/logic/user"
 )

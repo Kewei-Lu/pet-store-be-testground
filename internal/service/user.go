@@ -15,6 +15,8 @@ type (
 		CookieValidate(ctx context.Context, in model.UserCookiesInput) error
 		CreateUser(ctx context.Context, in model.UserRegisterInput) error
 		Login(ctx context.Context, in model.UserLoginInput) error
+		UserValidate(ctx context.Context, in model.UserValidateInput) error
+		UserSetLastLogin(ctx context.Context, in model.UserSetLastLoginInput) error
 	}
 )
 

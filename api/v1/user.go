@@ -34,3 +34,4 @@ type UserCookiesRes struct {
 	g.Meta  `mime:"text/html" example:"string"`
 	Success bool
 }
+

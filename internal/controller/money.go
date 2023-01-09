@@ -65,6 +65,7 @@ func (c *cMoney) TransferMoney(ctx context.Context, req *v1.TransferMoneyReq) (r
 		return
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
+	g.Log().Print(ctx, "claims: ", claims)
 	if ok {
 		username := claims["user-name"].(string)
 		if username != req.SourceAccount {

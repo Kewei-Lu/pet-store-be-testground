@@ -26,7 +26,6 @@ var (
 			// 	r.Response.Write("datetime:", datetime)
 			// })
 			s.Group("/api", func(group *ghttp.RouterGroup) {
-
 				group.Middleware(ghttp.MiddlewareCORS, ghttp.MiddlewareHandlerResponse)
 				group.Bind(
 					controller.Hello,
@@ -51,8 +50,16 @@ var (
 					)
 				})
 				group.Group("/auth", func(group *ghttp.RouterGroup) {
+					group.Middleware(csrf.NewWithCfg(csrf.Config{
+						Cookie: &http.Cookie{
+							Name: "X-Token", // token name in cookie
+						},
+						ExpireTime:      time.Hour * 24,
+						TokenLength:     32,
+						TokenRequestKey: "X-Token", // use this key to read token in request param
+					}))
 					group.Bind(
-						controller.Money,
+						controller.Auth,
 					)
 				})
 			})
