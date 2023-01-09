@@ -39,11 +39,11 @@ var (
 				group.Group("/money", func(group *ghttp.RouterGroup) {
 					group.Middleware(csrf.NewWithCfg(csrf.Config{
 						Cookie: &http.Cookie{
-							Name: "X-Token", // token name in cookie
+							Name: "jwt-token", // token name in cookie
 						},
 						ExpireTime:      time.Hour * 24,
 						TokenLength:     32,
-						TokenRequestKey: "X-Token", // use this key to read token in request param
+						TokenRequestKey: "jwt-token", // use this key to read token in request param
 					}))
 					group.Bind(
 						controller.Money,
@@ -52,11 +52,11 @@ var (
 				group.Group("/auth", func(group *ghttp.RouterGroup) {
 					group.Middleware(csrf.NewWithCfg(csrf.Config{
 						Cookie: &http.Cookie{
-							Name: "X-Token", // token name in cookie
+							Name: "jwt-token", // token name in cookie
 						},
 						ExpireTime:      time.Hour * 24,
 						TokenLength:     32,
-						TokenRequestKey: "X-Token", // use this key to read token in request param
+						TokenRequestKey: "jwt-token", // use this key to read token in request param
 					}))
 					group.Bind(
 						controller.Auth,

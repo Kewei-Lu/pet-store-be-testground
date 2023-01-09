@@ -48,11 +48,7 @@ func (c *cMoney) AddMoney(ctx context.Context, req *v1.AddMoneyReq) (res *v1.Add
 }
 
 func (c *cMoney) TransferMoney(ctx context.Context, req *v1.TransferMoneyReq) (res *v1.TransferMoneyRes, err error) {
-	// check user validity from cookie
-	UserNameCookie := g.RequestFromCtx(ctx).Cookie.Get("user-name").String()
-	IssueTimeCookie := g.RequestFromCtx(ctx).Cookie.Get("issue-time").String()
-	g.Log().Print(ctx, "UserNameCookie: ", UserNameCookie)
-	// check jwt token to identify the client-user
+	// use jwt token to identify the client-user
 	jwtToken := g.RequestFromCtx(ctx).Header.Get("jwt-token")
 	g.Log().Print(ctx, "jwtToken: ", jwtToken)
 	// decode
@@ -66,6 +62,7 @@ func (c *cMoney) TransferMoney(ctx context.Context, req *v1.TransferMoneyReq) (r
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	g.Log().Print(ctx, "claims: ", claims)
+	g.Log().Print(ctx, "sig: ", token.Signature)
 	if ok {
 		username := claims["user-name"].(string)
 		if username != req.SourceAccount {
@@ -74,7 +71,6 @@ func (c *cMoney) TransferMoney(ctx context.Context, req *v1.TransferMoneyReq) (r
 		}
 	}
 	g.Log().Print(ctx, "parsed token: ", token)
-	err = service.User().CookieValidate(ctx, model.UserCookiesInput{UserName: UserNameCookie, IssueTime: IssueTimeCookie})
 	if err != nil {
 		g.RequestFromCtx(ctx).Response.WriteStatus(403)
 		return

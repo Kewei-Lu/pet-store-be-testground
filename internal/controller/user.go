@@ -49,7 +49,6 @@ func (c *cUser) Login(ctx context.Context, req *v1.UserLoginReq) (res *v1.UserLo
 	// generate jwt
 	jwtToken, err := service.Auth().IssueJwtToken(ctx, model.JwtIssueInput{UserName: req.UserName, Sig: JWT_SIG, IssueTime: gtime.TimestampMilliStr()})
 	// set token stored in cookies
-	g.RequestFromCtx(ctx).Cookie.SetCookie("X-Token", grand.S(32), "", "/", gtime.D*365)
 	g.RequestFromCtx(ctx).Cookie.SetCookie("issue-time", fmt.Sprint(time.Now().Unix()), "", "/", gtime.D*365)
 	g.RequestFromCtx(ctx).Cookie.SetCookie("user-name", req.UserName, "", "/", gtime.D*365)
 	g.RequestFromCtx(ctx).Cookie.SetCookie("jwt-token", jwtToken.Token, "", "/", gtime.D*7)
