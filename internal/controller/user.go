@@ -49,10 +49,10 @@ func (c *cUser) Login(ctx context.Context, req *v1.UserLoginReq) (res *v1.UserLo
 	// generate jwt
 	jwtToken, err := service.Auth().IssueJwtToken(ctx, model.JwtIssueInput{UserName: req.UserName, Sig: JWT_SIG, IssueTime: gtime.TimestampMilliStr()})
 	// set token stored in cookies
-	g.RequestFromCtx(ctx).Cookie.Set("user-name", req.UserName)
-	g.RequestFromCtx(ctx).Cookie.Set("issue-time", fmt.Sprint(time.Now().Unix()))
-	g.RequestFromCtx(ctx).Cookie.SetCookie("X-Token", grand.S(32), ".kewei.sh.intel.com", "/", gtime.D*365)
-	g.RequestFromCtx(ctx).Cookie.SetCookie("jwt-token", jwtToken.Token, ".kewei.sh.intel.com", "/", gtime.D*7)
+	g.RequestFromCtx(ctx).Cookie.SetCookie("X-Token", grand.S(32), "", "/", gtime.D*365)
+	g.RequestFromCtx(ctx).Cookie.SetCookie("issue-time", fmt.Sprint(time.Now().Unix()), "", "/", gtime.D*365)
+	g.RequestFromCtx(ctx).Cookie.SetCookie("user-name", req.UserName, "", "/", gtime.D*365)
+	g.RequestFromCtx(ctx).Cookie.SetCookie("jwt-token", jwtToken.Token, "", "/", gtime.D*7)
 	g.RequestFromCtx(ctx).Response.Writeln(&v1.UserLoginRes{Success: true, Reason: "success"})
 	return
 }
