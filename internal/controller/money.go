@@ -57,7 +57,7 @@ func (c *cMoney) TransferMoney(ctx context.Context, req *v1.TransferMoneyReq) (r
 		return JWT_SIG, nil
 	})
 	if err != nil {
-		g.RequestFromCtx(ctx).Response.WriteStatus(403)
+		g.RequestFromCtx(ctx).Response.WriteStatus(403, "token validation fails")
 		return
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
