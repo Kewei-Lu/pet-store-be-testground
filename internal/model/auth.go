@@ -1,24 +1,41 @@
 package model
 
-type JwtValidateInput struct {
+type JWTValidateInput struct {
 	Token string
 	Sig   []byte
 }
-type JwtIssueInput struct {
+type RefreshTokenIssueInput struct {
+	UserName        string
+	IssueTime       string
+	RefreshTokenSig []byte
+}
+
+type RefreshTokenIssueOutput struct {
+	Token string
+}
+type AccessTokenIssueInput struct {
+	UserName       string
+	IssueTime      string
+	AccessTokenSig []byte
+}
+
+type AccessTokenIssueOutput struct {
+	Token string
+}
+
+type AccessTokenQueryInput struct {
+	Token          string
+	AccessTokenSig []byte
+}
+type AccessTokenQueryOutput struct {
 	UserName  string
 	IssueTime string
-	Sig       []byte
 }
-
-type JwtIssueOutPut struct {
-	Token string
+type RefreshTokenQueryInput struct {
+	Token           string
+	RefreshTokenSig []byte
 }
-
-type JwtQueryInput struct {
-	Token string
-	Sig   []byte
-}
-type JwtQueryOutput struct {
+type RefreshTokenQueryOutput struct {
 	UserName  string
 	IssueTime string
 }

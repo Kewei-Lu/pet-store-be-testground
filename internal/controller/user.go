@@ -45,12 +45,23 @@ func (c *cUser) Login(ctx context.Context, req *v1.UserLoginReq) (res *v1.UserLo
 		g.RequestFromCtx(ctx).Response.WriteStatus(401, &v1.UserLoginRes{Success: false, Reason: ReturnedError})
 		return
 	}
-	// generate jwt
-	jwtToken, err := service.Auth().IssueJwtToken(ctx, model.JwtIssueInput{UserName: req.UserName, Sig: JWT_SIG, IssueTime: gtime.TimestampMilliStr()})
+	// generate refresh token
+	RefreshToken, err := service.Auth().IssueRefreshToken(ctx, model.RefreshTokenIssueInput{UserName: req.UserName, RefreshTokenSig: REFRESH_TOKEN_SIG, IssueTime: gtime.TimestampMicroStr()})
+	if err != nil {
+		g.RequestFromCtx(ctx).Response.WriteStatus(401, "fail to generate refresh-token")
+		return
+	}
+	// generate access token
+	AccessToken, err := service.Auth().IssueAccessToken(ctx, model.AccessTokenIssueInput{UserName: req.UserName, AccessTokenSig: ACCESS_TOKEN_SIG, IssueTime: gtime.TimestampMicroStr()})
+	if err != nil {
+		g.RequestFromCtx(ctx).Response.WriteStatus(401, "fail to generate access-token")
+		return
+	}
 	// set token stored in cookies
 	g.RequestFromCtx(ctx).Cookie.SetCookie("issue-time", fmt.Sprint(time.Now().Unix()), "", "/", gtime.D*365)
 	g.RequestFromCtx(ctx).Cookie.SetCookie("user-name", req.UserName, "", "/", gtime.D*365)
-	g.RequestFromCtx(ctx).Cookie.SetCookie("jwt-token", jwtToken.Token, "", "/", gtime.D*7)
+	g.RequestFromCtx(ctx).Cookie.SetCookie("refresh-token", RefreshToken.Token, "", "/", gtime.D*7)
+	g.RequestFromCtx(ctx).Cookie.SetCookie("access-token", AccessToken.Token, "", "/", gtime.H*12)
 	g.RequestFromCtx(ctx).Response.Writeln(&v1.UserLoginRes{Success: true, Reason: "success"})
 	return
 }

@@ -12,9 +12,11 @@ import (
 
 type (
 	IAuth interface {
-		ValidateJwtToken(ctx context.Context, in model.JwtValidateInput) error
-		QueryJwtToken(ctx context.Context, in model.JwtQueryInput) (*model.JwtQueryOutput, error)
-		IssueJwtToken(ctx context.Context, in model.JwtIssueInput) (*model.JwtIssueOutPut, error)
+		ValidateJWTToken(ctx context.Context, in model.JWTValidateInput) error
+		QueryAccessToken(ctx context.Context, in model.AccessTokenQueryInput) (*model.AccessTokenQueryOutput, error)
+		QueryRefreshToken(ctx context.Context, in model.RefreshTokenQueryInput) (*model.RefreshTokenQueryOutput, error)
+		IssueAccessToken(ctx context.Context, in model.AccessTokenIssueInput) (*model.AccessTokenIssueOutput, error)
+		IssueRefreshToken(ctx context.Context, in model.RefreshTokenIssueInput) (*model.RefreshTokenIssueOutput, error)
 	}
 )
 

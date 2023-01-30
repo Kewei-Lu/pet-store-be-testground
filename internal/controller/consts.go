@@ -1,10 +1,6 @@
 package controller
 
 var (
-	JWT_SIG []byte = []byte("NSWE-PET-STORE")
+	ACCESS_TOKEN_SIG  []byte = []byte("NSWE-PET-STORE-ACCESS")
+	REFRESH_TOKEN_SIG []byte = []byte("NSWE-PET-STORE-REFRESH")
 )
-
-type JWT_PAYLOAD struct {
-	UserName  string
-	IssueTime string
-}

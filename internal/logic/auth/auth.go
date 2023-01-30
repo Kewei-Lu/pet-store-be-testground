@@ -21,10 +21,10 @@ func New() *sAuth {
 	return &sAuth{}
 }
 
-func (s *sAuth) ValidateJwtToken(ctx context.Context, in model.JwtValidateInput) error {
-	g.Log().Print(ctx, "jwtToken: ", in.Token)
+func (s *sAuth) ValidateJWTToken(ctx context.Context, in model.JWTValidateInput) error {
+	g.Log().Print(ctx, "JWT Token: ", in.Token)
 	_, err := jwt.ParseWithClaims(in.Token, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return JWT_SIG, nil
+		return in.Sig, nil
 	})
 	if err != nil {
 		return INVALID_JWT_ERROR
@@ -32,11 +32,11 @@ func (s *sAuth) ValidateJwtToken(ctx context.Context, in model.JwtValidateInput)
 	return nil
 }
 
-func (s *sAuth) QueryJwtToken(ctx context.Context, in model.JwtQueryInput) (*model.JwtQueryOutput, error) {
-	g.Log().Print(ctx, "jwtToken: ", in.Token)
+func (s *sAuth) QueryAccessToken(ctx context.Context, in model.AccessTokenQueryInput) (*model.AccessTokenQueryOutput, error) {
+	g.Log().Print(ctx, "Access Token: ", in.Token)
 	token, err := jwt.ParseWithClaims(in.Token, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		fmt.Println(token.Header)
-		return in.Sig, nil
+		return in.AccessTokenSig, nil
 	})
 	if err != nil {
 		return nil, INVALID_JWT_ERROR
@@ -46,19 +46,34 @@ func (s *sAuth) QueryJwtToken(ctx context.Context, in model.JwtQueryInput) (*mod
 	if ok {
 		username := claims["user-name"].(string)
 		issueTime := claims["issue-time"].(string)
-		return &model.JwtQueryOutput{UserName: username, IssueTime: issueTime}, nil
+		tokenType := claims["type"].(string)
+		if tokenType != "access-token" {
+			return nil, INVALID_JWT_ERROR
+		}
+		return &model.AccessTokenQueryOutput{UserName: username, IssueTime: issueTime}, nil
 	}
 	return nil, JWT_PAYLOAD_ERROR
 }
 
-func (s *sAuth) IssueJwtToken(ctx context.Context, in model.JwtIssueInput) (*model.JwtIssueOutPut, error) {
-	g.Log().Print(ctx, "Issue JWT token for user: ", in.UserName)
-	// generating jwt token
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"user-name": in.UserName, "issue-time": in.IssueTime})
-	signingString, err := claims.SignedString(in.Sig)
+func (s *sAuth) QueryRefreshToken(ctx context.Context, in model.RefreshTokenQueryInput) (*model.RefreshTokenQueryOutput, error) {
+	g.Log().Print(ctx, "Refresh Token: ", in.Token)
+	token, err := jwt.ParseWithClaims(in.Token, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+		fmt.Println(token.Header)
+		return in.RefreshTokenSig, nil
+	})
 	if err != nil {
-		return nil, JWT_GENERATE_ERROR
+		return nil, INVALID_JWT_ERROR
 	}
-	g.Log().Print(ctx, "signingSting: ", signingString)
-	return &model.JwtIssueOutPut{Token: signingString}, nil
+	claims, ok := token.Claims.(jwt.MapClaims)
+	g.Log().Print(ctx, "claims: ", claims)
+	if ok {
+		username := claims["user-name"].(string)
+		issueTime := claims["issue-time"].(string)
+		tokenType := claims["type"].(string)
+		if tokenType != "refresh-token" {
+			return nil, INVALID_JWT_ERROR
+		}
+		return &model.RefreshTokenQueryOutput{UserName: username, IssueTime: issueTime}, nil
+	}
+	return nil, JWT_PAYLOAD_ERROR
 }
